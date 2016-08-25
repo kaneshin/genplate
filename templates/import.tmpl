@@ -1,0 +1,3 @@
+import ({{range .}}
+	{{if ne "" .Alias}}{{printf "%s " .Alias}}{{end}}"{{.Path}}"{{end}}
+)

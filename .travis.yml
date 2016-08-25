@@ -1,0 +1,10 @@
+language: go
+go:
+  - 1.7
+  - tip
+dist: trusty
+sudo: required
+before_install:
+  - make init
+script:
+  - make unit
