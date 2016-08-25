@@ -4,11 +4,14 @@ GOARCH=$(word 2,$(subst /, ,$(lastword $(GOVERSION))))
 LINTIGNOREDEPS='vendor/.+\.go'
 TARGET_ONLY_PKGS=$(shell go list ./... 2> /dev/null | grep -v "/misc/" | grep -v "/vendor/")
 INTERNAL_BIN=.bin
+HAVE_GLIDE:=$(shell which glide)
 HAVE_GOLINT:=$(shell which golint)
 HAVE_GOCYCLO:=$(shell which gocyclo)
 HAVE_GOTEMPLATES:=$(shell which templates)
 
-.PHONY: unit generate lint vet cyclo test golint gocyclo gotemplates
+.PHONY: unit generate lint vet cyclo test golint gocyclo gotemplates install-deps
+
+init: install-deps
 
 unit: generate lint vet cyclo test
 
@@ -55,3 +58,13 @@ ifndef HAVE_GOTEMPLATES
 	@echo "Installing templates"
 	@go get -u github.com/cyberdelia/templates
 endif
+
+glide:
+ifndef HAVE_GLIDE
+	@echo "Installing glide"
+	@mkdir -p $(INTERNAL_BIN)
+	@wget -q -O - https://github.com/Masterminds/glide/releases/download/v0.11.1/glide-v0.11.1-$(GOOS)-$(GOARCH).tar.gz | tar xvz
+	@mv $(GOOS)-$(GOARCH)/glide $(INTERNAL_BIN)/glide
+	@rm -rf $(GOOS)-$(GOARCH)
+endif
+

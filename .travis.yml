@@ -4,5 +4,7 @@ go:
   - tip
 dist: trusty
 sudo: required
+before_install:
+  - make init
 script:
   - make unit
