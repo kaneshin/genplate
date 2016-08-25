@@ -6,14 +6,13 @@ TARGET_ONLY_PKGS=$(shell go list ./... 2> /dev/null | grep -v "/misc/" | grep -v
 INTERNAL_BIN=.bin
 HAVE_GLIDE:=$(shell which glide)
 HAVE_GOLINT:=$(shell which golint)
-HAVE_GOCYCLO:=$(shell which gocyclo)
 HAVE_GOTEMPLATES:=$(shell which templates)
 
-.PHONY: unit generate lint vet cyclo test golint gocyclo gotemplates install-deps
+.PHONY: unit generate lint vet test golint gotemplates install-deps
 
 init: install-deps
 
-unit: generate lint vet cyclo test
+unit: generate lint vet test
 
 generate: gotemplates
 	go generate .
@@ -29,10 +28,6 @@ vet:
 	@echo "Invoking vet"
 	@go tool vet -all -structtags -shadow $(shell ls -d */ | grep -v "misc" | grep -v "vendor")
 
-cyclo: gocyclo
-	@echo "Collecting cyclomatic complexities"
-	@gocyclo -over 30 .
-
 test:
 	@echo "Invoking test"
 	@go test $(TARGET_ONLY_PKGS)
@@ -45,12 +40,6 @@ golint:
 ifndef HAVE_GOLINT
 	@echo "Installing linter"
 	@go get -u github.com/golang/lint/golint
-endif
-
-gocyclo:
-ifndef HAVE_GOCYCLO
-	@echo "Installing gocyclo"
-	@go get -u github.com/fzipp/gocyclo
 endif
 
 gotemplates:
